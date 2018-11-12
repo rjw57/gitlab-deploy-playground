@@ -9,7 +9,7 @@ data "google_dns_managed_zone" "parent_zone" {
 
 # A random (but short!) zone name
 resource "random_id" "zone_name" {
-  byte_length = 4
+  byte_length = 2
   prefix      = "${var.generated_dns_name_prefix}"
 }
 

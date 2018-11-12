@@ -1,6 +1,6 @@
 # Configuration for this module
 locals {
-  release_name = "production"
+  release_name = "prod"
 }
 
 # Configuration from project state
@@ -38,7 +38,7 @@ module "tiller" {
 
 # Random id generator used to generate random project id.
 resource "random_id" "domain" {
-  byte_length = 4
+  byte_length = 2
   prefix      = "${local.release_name}-"
 }
 
