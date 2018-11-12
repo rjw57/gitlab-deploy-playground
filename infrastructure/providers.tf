@@ -23,3 +23,13 @@ provider "kubernetes" {
   token                  = "${data.google_client_config.current.access_token}"
   cluster_ca_certificate = "${base64decode(module.cluster.master_auth_cluster_ca_certificate)}"
 }
+
+provider "helm" {
+  service_account = "${module.tiller.service_account}"
+
+  kubernetes {
+    host                   = "${module.cluster.endpoint}"
+    token                  = "${data.google_client_config.current.access_token}"
+    cluster_ca_certificate = "${base64decode(module.cluster.master_auth_cluster_ca_certificate)}"
+  }
+}

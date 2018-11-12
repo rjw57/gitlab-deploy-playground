@@ -1,3 +1,8 @@
+# Configuration for this module
+locals {
+  release_name = "production"
+}
+
 # Configuration from project state
 locals {
   dns_name  = "${data.terraform_remote_state.project.dns_name}"
@@ -28,4 +33,24 @@ module "cloud_sql_instance" {
 # Tiller
 module "tiller" {
   source = "./tiller"
+}
+
+# Release
+module "gitlab" {
+  source = "./gitlab"
+
+  project = "${local.project}"
+  region  = "${local.region}"
+
+  name  = "${local.release_name}"
+  chart = "${path.module}/../charts/gitlab"
+
+  zone   = "${local.zone_name}"
+  domain = "${local.release_name}.${local.dns_name}"
+
+  # BUG: this needs to be created outside of terraform for the moment.
+  # https://github.com/terraform-providers/terraform-provider-kubernetes/issues/131
+  storage_class = "retain-ssd"
+
+  sql_instance = "${module.cloud_sql_instance.name}"
 }

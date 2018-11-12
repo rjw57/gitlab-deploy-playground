@@ -1,0 +1,19 @@
+certmanager-issuer:
+  email: "devops+gitlab@uis.cam.ac.uk"
+
+global:
+  hosts:
+    domain: "${domain}"
+    externalIP: "${ip_address}"
+
+gitlab:
+  gitaly:
+    persistence:
+      storageClass: "${storage_class}"
+
+redis:
+  persistence:
+    storageClass: "${storage_class}"
+
+gitlab-runner:
+  install: false

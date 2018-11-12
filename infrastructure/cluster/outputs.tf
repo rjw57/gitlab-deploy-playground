@@ -3,6 +3,18 @@
 
 output "endpoint" {
   value = "${google_container_cluster.cluster.endpoint}"
+
+  # Make this output depend not only on the cluster but also on the cluster node
+  # pool so that we don't try to deploy resources before there's a pool ready to
+  # accept them.
+  depends_on = [
+    "google_container_cluster.cluster",
+    "google_container_node_pool.cluster-pool-1",
+  ]
+}
+
+output "name" {
+  value = "${google_container_cluster.cluster.name}"
 }
 
 output "master_version" {
