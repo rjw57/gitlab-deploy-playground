@@ -6,6 +6,14 @@ output "gitlab_url" {
   ]
 }
 
+output "registry_url" {
+  value = "https://registry.${var.domain}"
+
+  depends_on = [
+    "helm_release.gitlab",
+  ]
+}
+
 output "initial_root_password" {
   sensitive = true
   value     = "${local.initial_root_password}"

@@ -6,6 +6,46 @@ global:
     domain: "${domain}"
     externalIP: "${ip_address}"
 
+  # We create sidecar containers for everything which needs to talk to the
+  # database and so the host is always "localhost"
+  psql:
+    # This is the host which should be used if the chart is not sidecar-aware.
+    host: "${db_proxy_service}"
+
+    # If the container knows how to deploy sidecar containers via the
+    # extraContainers and extraVolumes below then it should use this host.
+    sidecarHost: "localhost"
+
+    password:
+      secret: "${db_password_secret}"
+      key: "${db_password_key}"
+
+    database: "${db_name}"
+    username: "${db_username}"
+
+    # Extra containers which need to be added to pods talking to the database
+    sidecarContainers:
+      - name: cloudsql
+        image: "gcr.io/cloudsql-docker/gce-proxy:1.11"
+        command: [
+          "/cloud_sql_proxy",
+          "-instances=${db_connection_name}=tcp:0.0.0.0:5432",
+          "-credential_file=/secrets/cloudsql/credentials.json",
+        ]
+        securityContext:
+          runAsUser: 2  # non-root user
+          allowPrivilegeEscalation: false
+        volumeMounts:
+          - name: cloudsql-instance-credentials
+            mountPath: /secrets/cloudsql
+            readOnly: true
+
+    # Extra volumes which need to be added to pods talking to the database.
+    sidecarVolumes:
+      - name: cloudsql-instance-credentials
+        secret:
+          secretName: "${db_proxy_credentials_secret}"
+
 gitlab:
   gitaly:
     persistence:
@@ -16,4 +56,7 @@ redis:
     storageClass: "${storage_class}"
 
 gitlab-runner:
+  install: false
+
+postgresql:
   install: false

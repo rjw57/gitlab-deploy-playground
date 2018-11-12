@@ -52,5 +52,7 @@ module "gitlab" {
   # https://github.com/terraform-providers/terraform-provider-kubernetes/issues/131
   storage_class = "retain-ssd"
 
-  sql_instance = "${module.cloud_sql_instance.name}"
+  sql_instance                 = "${module.cloud_sql_instance.name}"
+  sql_instance_connection_name = "${module.cloud_sql_instance.connection_name}"
+  sql_instance_credentials     = "${module.cloud_sql_instance.service_account_credentials}"
 }
