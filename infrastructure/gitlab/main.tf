@@ -32,6 +32,9 @@ data "template_file" "chart_values" {
   }
 }
 
+# Work around:
+# https://github.com/terraform-providers/terraform-provider-helm/issues/116
+
 resource "helm_release" "gitlab" {
   name      = "gitlab"
   chart     = "${var.chart}"
