@@ -1,6 +1,6 @@
 # Local variables used elsewhere in the configuration
 locals {
-  db_name = "gitlab-${var.name}"
+  db_name     = "gitlab-${var.name}"
   db_username = "gitlab-${var.name}"
 }
 
@@ -37,7 +37,8 @@ resource "helm_release" "gitlab" {
   chart     = "${var.chart}"
   namespace = "${local.k8s_namespace}"
 
-  timeout = 1200
+  timeout       = 1200
+  recreate_pods = true
 
   values = [
     "${data.template_file.chart_values.rendered}",

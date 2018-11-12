@@ -35,6 +35,13 @@ module "tiller" {
   source = "./tiller"
 }
 
+
+# Random id generator used to generate random project id.
+resource "random_id" "domain" {
+  byte_length = 4
+  prefix      = "${local.release_name}-"
+}
+
 # Release
 module "gitlab" {
   source = "./gitlab"
@@ -46,7 +53,7 @@ module "gitlab" {
   chart = "${path.module}/../charts/gitlab"
 
   zone   = "${local.zone_name}"
-  domain = "${local.release_name}.${local.dns_name}"
+  domain = "${random_id.domain.hex}.${local.dns_name}"
 
   # BUG: this needs to be created outside of terraform for the moment.
   # https://github.com/terraform-providers/terraform-provider-kubernetes/issues/131
