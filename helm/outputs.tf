@@ -7,5 +7,6 @@ output "cluster_role_binding" {
 }
 
 output "home" {
-  value = "${data.null_data_source.init.outputs["home"]}"
+  value      = "${var.home}"
+  depends_on = ["null_resource.init"]
 }

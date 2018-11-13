@@ -1,3 +1,5 @@
 output "name" {
-  value = "${data.null_data_source.storage_class.outputs["name"]}"
+  value = "${local.name}"
+
+  depends_on = ["null_resource.storage_class"]
 }

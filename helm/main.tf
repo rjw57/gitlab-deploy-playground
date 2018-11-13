@@ -32,17 +32,13 @@ resource "kubernetes_cluster_role_binding" "tiller" {
 
 # Run helm init command
 resource "null_resource" "init" {
+  triggers {
+    kubeconfig_path = "${var.kubeconfig_path}"
+    service_account = "${local.tiller_service_account}"
+    home            = "${var.home}"
+  }
+
   provisioner "local-exec" {
     command = "helm init --kubeconfig '${var.kubeconfig_path}' --wait --service-account '${local.tiller_service_account}' --home '${var.home}'"
   }
-}
-
-# Data resource dependent on command which can be used for implicit
-# dependencies.
-data "null_data_source" "init" {
-  inputs {
-    home = "${var.home}"
-  }
-
-  depends_on = ["null_resource.init"]
 }

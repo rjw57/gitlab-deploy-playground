@@ -2,8 +2,13 @@
 # kubernetes_storage_class resource does not yet have the functionality we
 # require.
 resource "null_resource" "storage_class" {
+  triggers {
+    contents        = "${file("${path.module}/storage_class.yaml")}"
+    kubeconfig_path = "${var.kubeconfig_path}"
+  }
+
   provisioner "local-exec" {
-    command     = "kubectl apply -f storage_class.yaml"
+    command     = "kubectl apply -f ./storage_class.yaml"
     working_dir = "${path.module}"
 
     environment {
@@ -12,12 +17,6 @@ resource "null_resource" "storage_class" {
   }
 }
 
-# Provide storage class name as a data source so that it may be implicitly
-# depended on by reference.
-data "null_data_source" "storage_class" {
-  inputs {
-    name = "retain-ssd"
-  }
-
-  depends_on = ["null_resource.storage_class"]
+locals {
+  name = "retain-ssd"
 }
