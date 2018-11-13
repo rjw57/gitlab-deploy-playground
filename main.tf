@@ -53,6 +53,13 @@ locals {
 resource "random_id" "domain" {
   byte_length = 2
   prefix      = "${local.release_name}-"
+
+  # HACK: make this dependent on the chart deps having been updated so that we
+  # don't try to perform a release before they've been updated.
+  #
+  # This works around the fact that modules cannot have a depends_on value set
+  # directly so we have to se one on a dependent resource.
+  depends_on = ["null_resource.gitlab_chart_deps"]
 }
 
 # Release

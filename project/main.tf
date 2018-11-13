@@ -30,6 +30,7 @@ module "project" {
     "logging.googleapis.com",
     "monitoring.googleapis.com",
     "sqladmin.googleapis.com",
+    "storage-api.googleapis.com",
   ]
 
   # This list is non-authoritative; if someone has the role/editor role on the

@@ -34,8 +34,7 @@ resource "helm_release" "gitlab" {
   chart     = "${var.chart}"
   namespace = "${local.k8s_namespace}"
 
-  timeout       = 1200
-  recreate_pods = true
+  timeout = 1200
 
   values = [
     "${data.template_file.chart_values.rendered}",
