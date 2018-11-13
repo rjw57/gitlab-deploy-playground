@@ -6,10 +6,16 @@
 # project-specific service account.
 provider "google" {
   credentials = "${module.project.owner_service_account_credentials}"
+
+  project = "${module.project.project_id}"
+  region  = "${module.project.region}"
 }
 
 provider "google-beta" {
   credentials = "${module.project.owner_service_account_credentials}"
+
+  project = "${module.project.project_id}"
+  region  = "${module.project.region}"
 }
 
 # Additional "admin" google providers which use the terraform admin service

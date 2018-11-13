@@ -45,6 +45,38 @@ resource "helm_release" "gitlab" {
     "${data.template_file.chart_values.rendered}",
   ]
 
+  # Domain and external IP
+  set {
+    name = "global.hosts.domain"
+    value = "${var.domain}"
+  }
+
+  set {
+    name = "global.hosts.externalIP"
+    value = "${google_compute_address.static-ip.address}"
+  }
+
+  # Configuration for docker image registry storage
+  set {
+    name = "registry.storage.secret"
+    value = "${local.registry_storage_secret}"
+  }
+
+  set {
+    name = "registry.storage.key"
+    value = "${local.registry_storage_key}"
+  }
+
+  set {
+    name = "registry.storage.extraKey"
+    value = "${local.registry_storage_extra_key}"
+  }
+
+  set {
+    name = "global.registry.bucket"
+    value = "${local.registry_storage_bucket}"
+  }
+
   depends_on = [
     "kubernetes_secret.initial_root_password",
     "kubernetes_secret.db_password",

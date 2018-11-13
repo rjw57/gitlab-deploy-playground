@@ -2,10 +2,6 @@ certmanager-issuer:
   email: "devops+gitlab@uis.cam.ac.uk"
 
 global:
-  hosts:
-    domain: "${domain}"
-    externalIP: "${ip_address}"
-
   # We create sidecar containers for everything which needs to talk to the
   # database and so the host is always "localhost"
   psql:
