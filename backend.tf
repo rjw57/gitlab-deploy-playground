@@ -14,7 +14,7 @@ terraform {
     bucket      = "terraform-state-gitlab-uuk1useh"
     prefix      = "terraform/gitlab/project/state"
     project     = "uis-automation-dm"
-    credentials = "../secrets/terraform-admin-service-account-credentials.json"
+    credentials = "./secrets/terraform-admin-service-account-credentials.json"
     region      = "europe-west2"
   }
 }

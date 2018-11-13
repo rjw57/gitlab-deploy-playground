@@ -18,8 +18,9 @@ data "template_file" "chart_values" {
   template = "${file("${path.module}/chart-values.template.yaml")}"
 
   vars {
-    domain        = "${var.domain}"
-    ip_address    = "${google_compute_address.static-ip.address}"
+    domain     = "${var.domain}"
+    ip_address = "${google_compute_address.static-ip.address}"
+
     storage_class = "${var.storage_class}"
 
     db_name                     = "${local.db_name}"
@@ -31,9 +32,6 @@ data "template_file" "chart_values" {
     db_password_key             = "password"
   }
 }
-
-# Work around:
-# https://github.com/terraform-providers/terraform-provider-helm/issues/116
 
 resource "helm_release" "gitlab" {
   name      = "gitlab"

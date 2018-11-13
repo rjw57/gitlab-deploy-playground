@@ -6,15 +6,30 @@ output "cluster_name" {
   value = "${module.cluster.name}"
 }
 
+output "cluster_client_certificate" {
+  value = "${base64decode(module.cluster.master_auth_client_certificate)}"
+}
+
+output "cluster_client_key" {
+  value = "${base64decode(module.cluster.master_auth_client_key)}"
+}
+
 output "cluster_ca_certificate" {
   value = "${base64decode(module.cluster.master_auth_cluster_ca_certificate)}"
 }
 
-output "gitlab_url" {
-  value = "${module.gitlab.gitlab_url}"
+output "cluster_kubeconfig" {
+  value = "${module.cluster.master_auth_kubeconfig}"
 }
 
-output "initial_root_password" {
-  sensitive = true
-  value     = "${module.gitlab.initial_root_password}"
+output "sql_instance_name" {
+  value = "${module.cloud_sql_instance.name}"
+}
+
+output "sql_instance_connection_name" {
+  value = "${module.cloud_sql_instance.connection_name}"
+}
+
+output "sql_instance_proxy_credentials" {
+  value = "${module.cloud_sql_instance.service_account_credentials}"
 }

@@ -12,9 +12,16 @@ resource "google_container_cluster" "cluster" {
   project  = "${var.project}"
   region   = "${var.region}"
 
+  # This is required to allow the created admin user to perform administrative
+  # tasks within the cluster.
+  enable_legacy_abac = true
+
   master_auth {
-    username = "admin"
-    password = "${random_string.admin-password.result}"
+    # Supplying blank username and passwords disables basic authentication and
+    # instead will mandate certificate-based authentication.
+    username = ""
+
+    password = ""
 
     client_certificate_config {
       issue_client_certificate = true
@@ -42,13 +49,6 @@ resource "google_container_cluster" "cluster" {
   remove_default_node_pool = true
 
   initial_node_count = 1
-}
-
-# A password for the admin user. Note that terraform uses a cryptographic random
-# string generator.
-resource "random_string" "admin-password" {
-  length  = 32
-  special = true
 }
 
 # The node pool associated with the cluster. We do not specify a node version
@@ -87,16 +87,17 @@ resource "google_container_node_pool" "cluster-pool-1" {
   }
 }
 
-data "google_client_config" "current" {}
-
 # kubectl configuration
 data "template_file" "kubeconfig" {
   template = "${file("${path.module}/kubeconfig.template.yaml")}"
 
   vars {
-    name           = "${google_container_cluster.cluster.name}"
+    name = "${google_container_cluster.cluster.name}"
+
+    client_certificate = "${google_container_cluster.cluster.master_auth.0.client_certificate}"
+    client_key         = "${google_container_cluster.cluster.master_auth.0.client_key}"
+
     ca_certificate = "${google_container_cluster.cluster.master_auth.0.cluster_ca_certificate}"
     endpoint       = "${google_container_cluster.cluster.endpoint}"
-    token          = "${data.google_client_config.current.access_token}"
   }
 }

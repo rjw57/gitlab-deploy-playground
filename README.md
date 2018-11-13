@@ -1,6 +1,7 @@
 # Bootstrap
 
-1. Download [terraform](https://www.terraform.io/).
+1. Download [terraform](https://www.terraform.io/) and [helm](https://helm.sh/).
+   Helm must be installed so that the ``helm`` command is available on the path.
 2. Generate a key for the Terraform Service account in the uis-automation-dm
    project:
 
@@ -10,51 +11,23 @@
         --iam-account terraform-admin@uis-automation-dm.iam.gserviceaccount.com
     ```
 
-# Project
-
-Bootstrap and create project
+# Install
 
 ```bash
-$ cd project
-$ terraform init
+$ terraform init  # required only once
 $ terraform apply
 ```
 
-# Release
+# Get URL and initial root password
 
 ```bash
-$ cd infrastructure
-$ terraform init
-$ terraform apply
-```
-
-The initial helm release will fail dues to some remaining issues. Fix it:
-
-```bash
-$ ./fixit.sh
-```
-
-After fixing things, re-run `terraform apply`.
-
-## Get URL
-
-```bash
-$ cd infrastructure
 $ terraform output gitlab_url
+$ terraform output initial_root_password
 ```
 
-## Get initial root password
+# Setting up admin service account
 
-```bash
-$ gcloud --project=$(cd project; terraform output project_id) \
-    container clusters get-credentials \
-    --region=$(cd project; terraform output region) \
-    "$(cd infrastructure; terraform output cluster_name)"
-$ kubectl -n gitlab-production get secret gitlab-gitlab-initial-root-password -o jsonpath={.data.password} | \
-    base64 -d; echo
-```
-
-## Setting up service account
+The terraform admin service account is created in the following way:
 
 ```bash
 $ gcloud iam --project uis-automation-dm service-accounts \
