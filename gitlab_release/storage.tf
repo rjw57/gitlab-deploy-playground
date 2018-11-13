@@ -30,12 +30,13 @@ resource "google_storage_bucket_iam_member" "registry" {
 
 resource "kubernetes_secret" "registry" {
   metadata {
-    name = "registry-storage"
+    name      = "registry-storage"
     namespace = "${local.k8s_namespace}"
   }
 
   data {
     credentials.json = "${module.registry_service_account.private_key}"
+
     config = <<EOF
 gcs:
   bucket: "${google_storage_bucket.registry.name}"
@@ -45,8 +46,8 @@ EOF
 }
 
 locals {
-  registry_storage_bucket = "${google_storage_bucket.registry.name}"
-  registry_storage_secret = "${kubernetes_secret.registry.metadata.0.name}"
-  registry_storage_key = "config"
+  registry_storage_bucket    = "${google_storage_bucket.registry.name}"
+  registry_storage_secret    = "${kubernetes_secret.registry.metadata.0.name}"
+  registry_storage_key       = "config"
   registry_storage_extra_key = "credentials.json"
 }

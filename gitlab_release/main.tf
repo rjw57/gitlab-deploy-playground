@@ -18,18 +18,14 @@ data "template_file" "chart_values" {
   template = "${file("${path.module}/chart-values.template.yaml")}"
 
   vars {
-    domain     = "${var.domain}"
-    ip_address = "${google_compute_address.static-ip.address}"
-
     storage_class = "${var.storage_class}"
 
-    db_name                     = "${local.db_name}"
-    db_username                 = "${local.db_username}"
-    db_connection_name          = "${var.sql_instance_connection_name}"
-    db_proxy_service            = "${local.db_proxy_service}"
-    db_proxy_credentials_secret = "${local.db_proxy_credentials_secret}"
-    db_password_secret          = "${local.db_password_secret}"
-    db_password_key             = "password"
+    db_name            = "${local.db_name}"
+    db_username        = "${local.db_username}"
+    db_connection_name = "${var.sql_instance_connection_name}"
+    db_proxy_service   = "${local.db_proxy_service}"
+    db_password_secret = "${local.db_password_secret}"
+    db_password_key    = "password"
   }
 }
 
@@ -47,33 +43,33 @@ resource "helm_release" "gitlab" {
 
   # Domain and external IP
   set {
-    name = "global.hosts.domain"
+    name  = "global.hosts.domain"
     value = "${var.domain}"
   }
 
   set {
-    name = "global.hosts.externalIP"
+    name  = "global.hosts.externalIP"
     value = "${google_compute_address.static-ip.address}"
   }
 
   # Configuration for docker image registry storage
   set {
-    name = "registry.storage.secret"
+    name  = "registry.storage.secret"
     value = "${local.registry_storage_secret}"
   }
 
   set {
-    name = "registry.storage.key"
+    name  = "registry.storage.key"
     value = "${local.registry_storage_key}"
   }
 
   set {
-    name = "registry.storage.extraKey"
+    name  = "registry.storage.extraKey"
     value = "${local.registry_storage_extra_key}"
   }
 
   set {
-    name = "global.registry.bucket"
+    name  = "global.registry.bucket"
     value = "${local.registry_storage_bucket}"
   }
 

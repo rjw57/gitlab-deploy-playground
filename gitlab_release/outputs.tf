@@ -1,5 +1,5 @@
 output "gitlab_url" {
-  value = "https://gitlab.${var.domain}"
+  value = "https://gitlab.${var.domain}/"
 
   depends_on = [
     "helm_release.gitlab",
@@ -7,7 +7,7 @@ output "gitlab_url" {
 }
 
 output "registry_url" {
-  value = "https://registry.${var.domain}"
+  value = "https://registry.${var.domain}/"
 
   depends_on = [
     "helm_release.gitlab",
