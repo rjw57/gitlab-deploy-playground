@@ -53,12 +53,25 @@ resource "kubernetes_secret" "backups_s3cfg" {
     namespace = "${local.k8s_namespace}"
   }
 
+  # This config is based on the example in
+  # https://gitlab.com/charts/gitlab/issues/721. Unfortunately GCS does not
+  # support AWS-style authentication for service accounts and so these values
+  # need to be manually poked in when running backups.
+  #
+  # Access and secret key can be generated in the interoperability
+  # https://console.cloud.google.com/storage/settings
+  # See Docs: https://cloud.google.com/storage/docs/interoperability
   data {
     s3cfg = <<EOF
 [default]
-access_key = BOGUS_ACCESS_KEY
-secret_key = BOGUS_SECRET_KEY
-bucket_location = us-east-1
+access_key = $AWS_ACCESS_KEY_ID
+secret_key = $AWS_SECRET_KEY
+
+host_base = storage.googleapis.com
+host_bucket = storage.googleapis.com
+use_https = True
+signature_v2 = True
+enable_multipart = False
 EOF
   }
 }
