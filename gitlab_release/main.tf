@@ -77,5 +77,6 @@ resource "helm_release" "gitlab" {
     "kubernetes_secret.db_password",
     "kubernetes_secret.db_proxy_credentials",
     "kubernetes_service.cloud_sql_proxy",
+    "google_dns_record_set.wildcard",
   ]
 }
