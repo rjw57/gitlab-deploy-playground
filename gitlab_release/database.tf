@@ -16,14 +16,12 @@ locals {
 
 # Create a database and user for release
 resource "google_sql_database" "gitlab" {
-  project  = "${var.project}"
   name     = "${local.db_name}"
   instance = "${var.sql_instance}"
 }
 
 # Corresponding database user.
 resource "google_sql_user" "gitlab" {
-  project  = "${var.project}"
   name     = "${local.db_username}"
   instance = "${var.sql_instance}"
   password = "${local.db_password}"

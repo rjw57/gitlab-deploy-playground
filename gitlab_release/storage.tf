@@ -16,7 +16,6 @@ module "registry_service_account" {
 }
 
 resource "google_storage_bucket" "registry" {
-  project       = "${var.project}"
   name          = "${local.bucket_prefix}-registry"
   location      = "europe-west2"
   storage_class = "REGIONAL"

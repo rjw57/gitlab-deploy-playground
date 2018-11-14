@@ -46,5 +46,12 @@ $ gcloud projects add-iam-policy-binding uis-automation-infrastructure \
     --role roles/dns.admin
 ```
 
+The terraform state bucket is created in the following way:
+
+```bash
+$ gsutil mb -p uis-automation-dm -l europe-west2 gs://uis-devops-terraform-state-you6phet
+$ gsutil versioning set on gs://uis-devops-terraform-state-you6phet
+```
+
 Additionally terraform-admin@uis-automation-dm.iam.gserviceaccount.com is added
 as a "Billing User" to the billing account.

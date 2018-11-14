@@ -1,21 +1,5 @@
-module "project" {
-  source = "./project"
-
-  providers = {
-    google      = "google.admin"
-    google-beta = "google-beta.admin"
-  }
-}
-
-locals {
-  # Pull out project and region as locals for easy reference.
-  project = "${module.project.project_id}"
-  region  = "${module.project.region}"
-
-  # Pull out Cloud DNS info into locals
-  dns_name  = "${module.project.dns_name}"
-  zone_name = "${module.project.zone_name}"
-}
+# main.tf contains the top-level resources created as part of the deployment. ot
+# much work is actually done here; instead, we wire multiple modules together.
 
 module "infrastructure" {
   source = "./infrastructure"
@@ -33,10 +17,6 @@ module "infrastructure" {
 resource "local_file" "kubeconfig" {
   content  = "${module.infrastructure.cluster_kubeconfig}"
   filename = "${path.module}/secrets/kubeconfig"
-}
-
-locals {
-  kubeconfig_path = "${local_file.kubeconfig.filename}"
 }
 
 module "retained_storage_class" {
@@ -65,9 +45,6 @@ resource "random_id" "domain" {
 # Release
 module "gitlab_release" {
   source = "./gitlab_release"
-
-  project = "${local.project}"
-  region  = "${local.region}"
 
   name  = "${local.release_name}"
   chart = "${path.module}/charts/gitlab"

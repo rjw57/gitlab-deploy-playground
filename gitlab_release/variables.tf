@@ -1,9 +1,3 @@
-# GCP project id
-variable "project" {}
-
-# Region to create resources in
-variable "region" {}
-
 # Location of gitlab chart
 variable "chart" {}
 
