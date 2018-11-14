@@ -28,11 +28,7 @@ resource "null_resource" "gitlab_chart_deps" {
   }
 
   provisioner "local-exec" {
-    command = <<EOF
-helm \
-  --home '${local.helm_home}' --kubeconfig '${local.kubeconfig_path}' \
-  dependencies update charts/gitlab"
-EOF
+    command = "helm --home '${local.helm_home}' --kubeconfig '${local.kubeconfig_path}' dependencies update charts/gitlab"
 
     working_dir = "${path.module}"
   }
