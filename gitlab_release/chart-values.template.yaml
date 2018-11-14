@@ -2,6 +2,9 @@ certmanager-issuer:
   email: "devops+gitlab@uis.cam.ac.uk"
 
 global:
+  minio:
+    enabled: false
+
   psql:
     host: "${db_proxy_service}"
 

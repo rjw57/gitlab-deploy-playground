@@ -51,6 +51,91 @@ resource "helm_release" "gitlab" {
     value = "${google_compute_address.static-ip.address}"
   }
 
+  # Backup object storage
+  set {
+    name  = "global.appConfig.backups.bucket"
+    value = "bogus-backup-bucket"
+  }
+
+  set {
+    name  = "global.appConfig.backups.tmpBucket"
+    value = "bogus-backup-tmp-bucket"
+  }
+
+  set {
+    name  = "gitlab.task-runner.backups.objectStorage.config.secret"
+    value = "${local.backups_s3cfg_secret}"
+  }
+
+  set {
+    name  = "gitlab.task-runner.backups.objectStorage.config.key"
+    value = "s3cfg"
+  }
+
+  # Uploads object storage
+  set {
+    name  = "global.appConfig.uploads.bucket"
+    value = "${local.uploads_storage_bucket}"
+  }
+
+  set {
+    name  = "global.appConfig.uploads.connection.secret"
+    value = "${local.uploads_storage_secret}"
+  }
+
+  set {
+    name  = "global.appConfig.uploads.connection.key"
+    value = "${local.uploads_storage_key}"
+  }
+
+  # Lfs object storage
+  set {
+    name  = "global.appConfig.lfs.bucket"
+    value = "${local.lfs_storage_bucket}"
+  }
+
+  set {
+    name  = "global.appConfig.lfs.connection.secret"
+    value = "${local.lfs_storage_secret}"
+  }
+
+  set {
+    name  = "global.appConfig.lfs.connection.key"
+    value = "${local.lfs_storage_key}"
+  }
+
+  # Artifacts object storage
+  set {
+    name  = "global.appConfig.artifacts.bucket"
+    value = "${local.artifacts_storage_bucket}"
+  }
+
+  set {
+    name  = "global.appConfig.artifacts.connection.secret"
+    value = "${local.artifacts_storage_secret}"
+  }
+
+  set {
+    name  = "global.appConfig.artifacts.connection.key"
+    value = "${local.artifacts_storage_key}"
+  }
+
+  # Packages object storage
+  set {
+    name  = "global.appConfig.packages.bucket"
+    value = "${local.packages_storage_bucket}"
+  }
+
+  set {
+    name  = "global.appConfig.packages.connection.secret"
+    value = "${local.packages_storage_secret}"
+  }
+
+  set {
+    name  = "global.appConfig.packages.connection.key"
+    value = "${local.packages_storage_key}"
+  }
+
   # Configuration for docker image registry storage
   set {
     name  = "registry.storage.secret"
