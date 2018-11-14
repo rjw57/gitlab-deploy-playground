@@ -46,8 +46,9 @@ resource "random_id" "domain" {
 module "gitlab_release" {
   source = "./gitlab_release"
 
-  name  = "${local.release_name}"
-  chart = "${path.module}/charts/gitlab"
+  name = "${local.release_name}"
+
+  chart = "gitlab/gitlab"
 
   zone   = "${local.zone_name}"
   domain = "${random_id.domain.hex}.${local.dns_name}"

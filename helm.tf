@@ -19,19 +19,20 @@ resource "helm_repository" "gitlab" {
   depends_on = ["module.helm"]
 }
 
-# Update dependencies in the gitlab chart which we have vendored in
-resource "null_resource" "gitlab_chart_deps" {
-  # Only run the command if any of the following values change.
-  triggers {
-    home            = "${local.helm_home}"
-    kubeconfig_path = "${local.kubeconfig_path}"
-  }
+# # Update dependencies in the gitlab chart which we have vendored in
+# resource "null_resource" "gitlab_chart_deps" {
+#   # Only run the command if any of the following values change.
+#   triggers {
+#     home            = "${local.helm_home}"
+#     kubeconfig_path = "${local.kubeconfig_path}"
+#   }
+# 
+#   provisioner "local-exec" {
+#     command = "helm --home '${local.helm_home}' --kubeconfig '${local.kubeconfig_path}' dependencies update charts/gitlab"
+# 
+#     working_dir = "${path.module}"
+#   }
+# 
+#   depends_on = ["helm_repository.gitlab"]
+# }
 
-  provisioner "local-exec" {
-    command = "helm --home '${local.helm_home}' --kubeconfig '${local.kubeconfig_path}' dependencies update charts/gitlab"
-
-    working_dir = "${path.module}"
-  }
-
-  depends_on = ["helm_repository.gitlab"]
-}
