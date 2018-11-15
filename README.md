@@ -9,6 +9,14 @@ recommended that you make use of terraform
 parallel deployment first. See the section below on "getting familiar with this
 deployment".
 
+## Known issues
+
+This deployment is not yet complete. Known issues include:
+
+* There is no configuration of email sending or receiving.
+* There are no backup object storage buckets created.
+* The mechanism for having the Gitlab instance on a custom URL is untested.
+
 ## Bootstrap
 
 > **ALWAYS** make sure you have the latest versions of terraform and helm
