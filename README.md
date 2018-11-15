@@ -3,6 +3,12 @@
 This repository contains a declarative deployment of Gitlab using the official
 helm charts on GKE.
 
+**IMPORTANT:** when first experimenting with this repository, it is *highly*
+recommended that you make use of terraform
+[workspaces](https://www.terraform.io/docs/state/workspaces.html) to create a
+parallel deployment first. See the section below on "getting familiar with this
+deployment".
+
 ## Bootstrap
 
 > **ALWAYS** Make sure you have the latest versions of terraform and helm
@@ -140,6 +146,30 @@ This is a sign that the ``helm init`` command succeeded but the tiller pod is
 not yet fully up. By the time you've read the message and found this entry in
 the README, the pod is probably up so just go back to your terminal and press
 "up" and "enter".
+
+## Getting familiar with this deployment
+
+This deployment is large and complex and is possibly best understood by
+experimenting with it. One has two choice in this regard:
+
+1. Experiment but only ever deploy the testing release.
+
+2. Set up two entirely new Google projects.
+
+If you want to go down the latter route, you can set up a new "workspace". A
+"workspace" is an entirely parallel terraform state which is different from the
+"default" workspace. In this parallel workspace you can try deploying your own
+version of Gitlab.
+
+You really should read an digest the entire section of the terraform manual on
+workspaces first but the quick, quick version is:
+
+```bash
+$ terraform workspace new my-workspace  # choose a better name than this!
+$ terraform init
+$ terraform apply -target=module.production.module.project -target=module.test.module.project
+$ terraform apply
+```
 
 ## Setting up terraform admin service account
 
