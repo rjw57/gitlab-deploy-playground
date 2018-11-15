@@ -25,7 +25,8 @@ This deployment is not yet complete. Known issues include:
 
 1. Download [terraform](https://www.terraform.io/) and [helm](https://helm.sh/).
    Helm must be installed so that the ``helm`` command is available on the path.
-2. Generate a key for the Terraform Service account in the uis-automation-dm
+2. Make sure that the ``kubectl`` command is installed an on the path.
+3. Generate a key for the Terraform Service account in the uis-automation-dm
    project:
 
     ```bash
@@ -33,7 +34,7 @@ This deployment is not yet complete. Known issues include:
         keys create secrets/terraform-admin-service-account-credentials.json \
         --iam-account terraform-admin@uis-automation-dm.iam.gserviceaccount.com
     ```
-3. Make sure your local helm install is up-to-date and has the Gitlab repository
+4. Make sure your local helm install is up-to-date and has the Gitlab repository
    configured:
 
     ```bash
