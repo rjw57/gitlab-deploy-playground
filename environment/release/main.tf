@@ -220,6 +220,17 @@ resource "helm_release" "gitlab" {
     value = "${local.registry_storage_bucket}"
   }
 
+  # SAML configuration
+  set {
+    name  = "gitlab.unicorn.omniauth.providers[0].secret"
+    value = "${local.saml_config_secret}"
+  }
+
+  set {
+    name  = "gitlab.unicorn.omniauth.providers[0].key"
+    value = "config"
+  }
+
   depends_on = [
     "kubernetes_secret.initial_root_password",
     "kubernetes_service.cloud_sql_proxy",

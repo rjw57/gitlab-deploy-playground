@@ -5,6 +5,15 @@ global:
   minio:
     enabled: false
 
+gitlab:
+  unicorn:
+    omniauth:
+      enabled: true
+      allowSingleSignOn: ['saml']
+      blockAutoCreatedUsers: false
+      autoLinkSamlUser: true
+      providers: []
+
 gitlab-runner:
   install: false
 

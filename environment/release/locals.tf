@@ -13,6 +13,7 @@ locals {
   db_proxy_credentials_secret  = "${kubernetes_secret.db_proxy_credentials.metadata.0.name}"
   backups_s3cfg_secret         = "${kubernetes_secret.backups_s3cfg.metadata.0.name}"
   initial_root_password_secret = "${kubernetes_secret.initial_root_password.metadata.0.name}"
+  saml_config_secret           = "${kubernetes_secret.saml_config.metadata.0.name}"
 
   # Actual domain we pass to the gitlab chart. Can be overridden.
   gitlab_domain = "${var.gitlab_domain == "" ? replace(var.dns_name, "/\\.$/", "") : var.gitlab_domain}"
