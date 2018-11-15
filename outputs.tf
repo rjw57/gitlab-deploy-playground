@@ -1,14 +1,37 @@
-# outputs.tf contain root-level outputs for the configuration. They can be
-# queried via the "terraform output" command.
+# outputs.tf contains top-level outputs from the deployment
+#
+# Use of these outputs are documented in README.md.
 
-# A URL pointing to the gitlab deployment.
-output "gitlab_url" {
-  value = "${module.gitlab_release.gitlab_url}"
+# URL for production gitlab instance.
+output "production_gitlab_url" {
+  value = "${module.production.gitlab_url}"
 }
 
-# The initial password for the "root" user. Note that if the root user *changes*
-# their password, this output does not update.
-output "initial_root_password" {
+# Initial root password for production gitlab instance.
+output "production_initial_root_password" {
+  value     = "${module.production.initial_root_password}"
   sensitive = true
-  value     = "${module.gitlab_release.initial_root_password}"
+}
+
+# Kubeconfig file contents which allow connection to the production k8s cluster.
+output "production_kubeconfig_content" {
+  value     = "${module.production.kubeconfig_content}"
+  sensitive = true
+}
+
+# URL for test gitlab instance.
+output "test_gitlab_url" {
+  value = "${module.test.gitlab_url}"
+}
+
+# Initial root password for test gitlab instance.
+output "test_initial_root_password" {
+  value     = "${module.test.initial_root_password}"
+  sensitive = true
+}
+
+# Kubeconfig file contents which allow connection to the test k8s cluster.
+output "test_kubeconfig_content" {
+  value     = "${module.test.kubeconfig_content}"
+  sensitive = true
 }

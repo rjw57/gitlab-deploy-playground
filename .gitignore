@@ -1,5 +1,5 @@
 secrets/*
-!secrets/.keep
+!secrets/README.md
 .terraform/
 terraform.tfstate.*.backup
 helm-home/

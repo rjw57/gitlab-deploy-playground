@@ -1,61 +1,61 @@
-# main.tf contains the top-level resources created as part of the deployment. ot
-# much work is actually done here; instead, we wire multiple modules together.
+# main.tf contains configuration for the top-level resources
 
-module "infrastructure" {
-  source = "./infrastructure"
-
-  project = "${local.project}"
-  region  = "${local.region}"
-
-  owner_service_account_credentials = "${module.project.owner_service_account_credentials}"
-
-  dns_name  = "${local.dns_name}"
-  zone_name = "${local.zone_name}"
-}
-
-# Create a kubeconfig for talking to the cluster
-resource "local_file" "kubeconfig" {
-  content  = "${module.infrastructure.cluster_kubeconfig}"
-  filename = "${path.module}/secrets/kubeconfig"
-}
-
-module "retained_storage_class" {
-  source = "./retained_storage_class"
-
-  kubeconfig_path = "${local.kubeconfig_path}"
-}
-
+# For various annoying reasons, bits of this configuration have to "escape" from
+# terraform every so often and write some state to the local disk. This
+# directory is a "safe" place to write stuff to which is ignored by git.
 locals {
-  release_name = "prod"
+  secrets_dir           = "${path.module}/secrets/"
+  experiments_folder_id = "497670463628"            # == "UIS Automation/Experiments"
 }
 
-# Random id generator used to generate random domain for gitlab
-resource "random_id" "domain" {
-  byte_length = 2
-  prefix      = "${local.release_name}-"
+# production environment
+module "production" {
+  source = "./environment"
 
-  # HACK: make this dependent on the chart deps having been updated so that we
-  # don't try to perform a release before they've been updated.
+  project_name                = "Gitlab Production"
+  project_folder_id           = "${local.experiments_folder_id}"
+  generated_project_id_prefix = "gitlab-prod"
+  generated_dns_name_prefix   = "gitprod-"
+
+  # If we want a more friendly URL for the deployment then we can use the
+  # gitlab_domain variable. For example, if we wanted this deployment to appear
+  # at https://gitlab.developers.cam.ac.uk/ with the Docker image registry at
+  # https://registry.developers.cam.ac.uk/, we would use the following setting:
   #
-  # This works around the fact that modules cannot have a depends_on value set
-  # directly so we have to se one on a dependent resource.
-  depends_on = ["null_resource.gitlab_chart_deps"]
+  # gitlab_domain = "developers.cam.ac.uk"
+
+  # The gitlab docs[1] recommend that we use n1-standard-4 machines over 2
+  # nodes. Since we use regional clusters we have a minimum of 3 nodes and so we
+  # reduce the machine type down to n1-standard-2.
+  #
+  # [1] https://gitlab.com/charts/gitlab/blob/master/doc/cloud/gke.md
+
+  db_tier                           = "db-custom-1-3840"
+  k8s_node_machine_type             = "n1-standard-2"                              # x 3 nodes per cluster
+  gitaly_persistence_size           = "200Gi"
+  admin_service_account_credentials = "${local.admin_service_account_credentials}"
+  secrets_dir                       = "${local.secrets_dir}"
 }
 
-# Release
-module "gitlab_release" {
-  source = "./gitlab_release"
+# test environment
+module "test" {
+  source = "./environment"
 
-  name = "${local.release_name}"
+  project_name                = "Gitlab Test"
+  project_folder_id           = "${local.experiments_folder_id}"
+  generated_project_id_prefix = "gitlab-test"
+  generated_dns_name_prefix   = "gittest-"
 
-  chart = "gitlab/gitlab"
+  # These resources are intentionally smaller than the production environment so
+  # that a) we notice resource problems sooner and b) we don't have to pay as
+  # much for it.
+  #
+  # Note that we need to use n1-standard-2 nodes even in test because otherwise
+  # the gitlab workloads become unschedulable due to CPU and memory constraints.
 
-  zone   = "${local.zone_name}"
-  domain = "${random_id.domain.hex}.${local.dns_name}"
-
-  storage_class = "${module.retained_storage_class.name}"
-
-  sql_instance                 = "${module.infrastructure.sql_instance_name}"
-  sql_instance_connection_name = "${module.infrastructure.sql_instance_connection_name}"
-  sql_instance_credentials     = "${module.infrastructure.sql_instance_proxy_credentials}"
+  db_tier                           = "db-f1-micro"
+  k8s_node_machine_type             = "n1-standard-2"                              # x 3 nodes per cluster
+  gitaly_persistence_size           = "10Gi"
+  admin_service_account_credentials = "${local.admin_service_account_credentials}"
+  secrets_dir                       = "${local.secrets_dir}"
 }
