@@ -11,7 +11,7 @@ deployment".
 
 ## Bootstrap
 
-> **ALWAYS** Make sure you have the latest versions of terraform and helm
+> **ALWAYS** make sure you have the latest versions of terraform and helm
 > installed. Especially with helm, earlier versions have bugs which are not
 > worked around by this configuration.
 
