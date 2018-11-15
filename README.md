@@ -159,7 +159,7 @@ the README, the pod is probably up so just go back to your terminal and press
 ## Getting familiar with this deployment
 
 This deployment is large and complex and is possibly best understood by
-experimenting with it. One has two choice in this regard:
+experimenting with it. One has two choices in this regard:
 
 1. Experiment but only ever deploy the testing release.
 
