@@ -1,0 +1,14 @@
+# Check that terraform fmt does not make any changes
+check_fmt:
+  image: alpine:3.8
+  tags:
+    - docker
+  variables:
+    TERRAFORM_VERSION: 0.11.10
+  before_script:
+    - apk add unzip curl
+    - curl -o /tmp/terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+    - unzip /tmp/terraform.zip -d /bin
+  script:
+    - pwd  # to confirm that fmt is running over the correct directory
+    - terraform fmt -check .
