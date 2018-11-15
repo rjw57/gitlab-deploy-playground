@@ -1,0 +1,12 @@
+# Static values for the gitlab chart. Dynamic values are configured directly in
+# the helm_release resource.
+
+global:
+  minio:
+    enabled: false
+
+gitlab-runner:
+  install: false
+
+postgresql:
+  install: false
