@@ -24,6 +24,7 @@ module "production" {
   #
   # gitlab_domain = "developers.cam.ac.uk"
 
+
   # The gitlab docs[1] recommend that we use n1-standard-4 machines over 2
   # nodes. Since we use regional clusters we have a minimum of 3 nodes and so we
   # reduce the machine type down to n1-standard-2.
