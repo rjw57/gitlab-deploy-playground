@@ -16,6 +16,7 @@ This deployment is not yet complete. Known issues include:
 * There is no configuration of email sending or receiving.
 * There are no backup object storage buckets created.
 * The mechanism for having the Gitlab instance on a custom URL is untested.
+* SAML authentication is broken.
 
 ## Bootstrap
 
