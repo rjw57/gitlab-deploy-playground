@@ -1,20 +1,22 @@
 resource "tls_private_key" "saml" {
-  algorithm = "ECDSA"
+  algorithm = "RSA"
 }
 
 resource "tls_self_signed_cert" "saml" {
-  key_algorithm   = "ECDSA"
+  key_algorithm   = "RSA"
   private_key_pem = "${tls_private_key.saml.private_key_pem}"
 
   validity_period_hours = 876600 # 100 years
 
+  # This is ignored by our IdP but let's make a good show of things.
   allowed_uses = [
     "data_encipherment",
     "encipher_only",
   ]
 
+  # This is ignored by our IdP but let's make a good show of things.
   subject {
-    common_name = "gitlab.${local.gitlab_domain}"
+    common_name = "${local.gitlab_external_host}"
   }
 }
 
@@ -27,44 +29,56 @@ resource "kubernetes_secret" "saml_config" {
   data {
     config = <<EOF
 name: "saml"
+label: "Raven"
 args:
-  assertion_consumer_service_url: "https://gitlab.${local.gitlab_domain}/users/auth/saml/callback"
+  issuer: "${local.gitlab_external_host}"
+  assertion_consumer_service_url: "https://${local.gitlab_external_host}/users/auth/saml/callback"
   certificate: |
     ${indent(4, tls_self_signed_cert.saml.cert_pem)}
   private_key: |
     ${indent(4, tls_private_key.saml.private_key_pem)}
+
+  # Only used to generate metadata
+  name_identifier_format: "urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
+
+  # List of attributes available is at
+  # https://wiki.cam.ac.uk/raven/Attributes_released_by_the_Raven_IdP#University_SPs
+  attribute_statements:
+    # "mail" is the actual email address for the user as opposed to "eppn" which
+    # is "<crsid>@cam.ac.uk". However "mail" is under the user's control and
+    # should not be used for access control.
+    email:
+      - 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6'
+      - 'urn:mace:dir:attribute-def:eduPersonPrincipalName'
+      - 'eppn'
+
+    # Human-friendly name
+    name:
+      - 'urn:oid:2.16.840.1.113730.3.1.241'
+      - 'urn:mace:dir:attribute-def:displayName'
+      - 'displayName'
+
+  idp_sso_target_url: "https://shib.raven.cam.ac.uk/idp/profile/SAML2/Redirect/SSO"
+
+  # From: http://shib.raven.cam.ac.uk/shibboleth
   idp_cert: |
     -----BEGIN CERTIFICATE-----
-    MIIEmDCCA4CgAwIBAgIQfLHlbRUtdCp5KSC69ObH+DANBgkqhkiG9w0BAQUFADA2
-    MQswCQYDVQQGEwJOTDEPMA0GA1UEChMGVEVSRU5BMRYwFAYDVQQDEw1URVJFTkEg
-    U1NMIENBMB4XDTEyMTIwNDAwMDAwMFoXDTE1MTIwNDIzNTk1OVowbzELMAkGA1UE
-    BhMCR0IxIDAeBgNVBAoTF1VuaXZlcnNpdHkgb2YgQ2FtYnJpZGdlMR8wHQYDVQQL
-    ExZVQ1MgU2hpYmJvbGV0aCBTZXJ2aWNlMR0wGwYDVQQDExRzaGliLnJhdmVuLmNh
-    bS5hYy51azCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMQTbdQmYTcE
-    Hwkw+7E9FXLcALHRwKoTpgA4PiZKcNu0CsVSD5VADQGN3u5myrlhjWIy7/filK5M
-    BoUl5zsFFAgtNcPvCaSCNo9VuvIgLyhrM36JVX5n4/L6rHEP1KpUimho67lpN/eL
-    92+3nXWIexwgDrYDiQyCl/RdHmzJCHakIMNnubnp8LdUvU4MDr2IviH7mecoUL/W
-    LsKO+kEvFJMTsr2XUWZezCHIcTtEx2k2G63GtBrEnPq/UiG/vqzOX0NMsUM4d+j6
-    mxogNZ6Ev3YZEWW98sCzzaBc7qsFjr3Derm4TuWDipkz59TdLlYPeC1TAsTFpTvg
-    42fGhZjK/esCAwEAAaOCAWcwggFjMB8GA1UdIwQYMBaAFAy9k2gM896ro0lrKzdX
-    R+qQ47ntMB0GA1UdDgQWBBSW6ydPZrdKjKgjpVpJ6K3T8BZrLzAOBgNVHQ8BAf8E
-    BAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUH
-    AwIwGAYDVR0gBBEwDzANBgsrBgEEAbIxAQICHTA6BgNVHR8EMzAxMC+gLaArhilo
-    dHRwOi8vY3JsLnRjcy50ZXJlbmEub3JnL1RFUkVOQVNTTENBLmNybDBtBggrBgEF
-    BQcBAQRhMF8wNQYIKwYBBQUHMAKGKWh0dHA6Ly9jcnQudGNzLnRlcmVuYS5vcmcv
-    VEVSRU5BU1NMQ0EuY3J0MCYGCCsGAQUFBzABhhpodHRwOi8vb2NzcC50Y3MudGVy
-    ZW5hLm9yZzAfBgNVHREEGDAWghRzaGliLnJhdmVuLmNhbS5hYy51azANBgkqhkiG
-    9w0BAQUFAAOCAQEAh5t+ortlUIp2CkhSF3KTeUm3O8vhM0EX0Kl6bid2qI69nxom
-    vGYMqBMPKcc9foCbEgILSKa9kUwt3lcyF4HFK7X/BzU0c7YyR/Di734fxyvWqsgj
-    H8WJJmZnS7md614HFlfoCMjeeC6iTuAT5LcsreBdl+VBerpL51/SCb0IKtd3J0dK
-    4+EFLNpQgQKhMYR2zGYIeNX+3uH5ESHhFYL7bgG3RsBTzn2CZALHGm6+dVgnjw49
-    fHaY+8yYGVTfXPZqJ08SfZxCidmlWejicoxE1uHFGuL6HSEDMm/uF3L0H4mUPoxO
-    iDQ+4/pKRbtOiTokxLohAPABDm+GgCrcuwZjqg==
+    MIICujCCAaICCQDN9BMM2g2oWzANBgkqhkiG9w0BAQUFADAfMR0wGwYDVQQDExRz
+    aGliLnJhdmVuLmNhbS5hYy51azAeFw0xNTExMjAxNDUwNTFaFw0yNTExMTcxNDUw
+    NTFaMB8xHTAbBgNVBAMTFHNoaWIucmF2ZW4uY2FtLmFjLnVrMIIBIjANBgkqhkiG
+    9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxBNt1CZhNwQfCTD7sT0VctwAsdHAqhOmADg+
+    Jkpw27QKxVIPlUANAY3e7mbKuWGNYjLv9+KUrkwGhSXnOwUUCC01w+8JpII2j1W6
+    8iAvKGszfolVfmfj8vqscQ/UqlSKaGjruWk394v3b7eddYh7HCAOtgOJDIKX9F0e
+    bMkIdqQgw2e5uenwt1S9TgwOvYi+IfuZ5yhQv9Yuwo76QS8UkxOyvZdRZl7MIchx
+    O0THaTYbrca0GsSc+r9SIb++rM5fQ0yxQzh36PqbGiA1noS/dhkRZb3ywLPNoFzu
+    qwWOvcN6ubhO5YOKmTPn1N0uVg94LVMCxMWlO+DjZ8aFmMr96wIDAQABMA0GCSqG
+    SIb3DQEBBQUAA4IBAQBimCfClavq2Wk1Zsq9AQ3TWeVFrm1kaCUi4J5j3uWNlMVK
+    PsIGE0BHAALMixG+XWt5+QW70CXq6RnHXMS0TLfM5q6K8jIVURK599bTF2/d4fNq
+    3QJNaVusuqCqym3Z7rt71QfGtPi0rVKVlQL+lL87a0TDLIyWLsbEe786NpYe0mEe
+    BXPQwpPwSaJ1PnPNlsl5i/cUZou5zZQGHtqEY/PR7wAxS/28A6qWLVpMQEUYtb9M
+    ZBb6lO15RJ5qwk6paQG87nhMPAFwSbK+OpCkt3hYd7l8LjXNG74eOZdPM5V6DmZz
+    nMRF0t4QBDKsuZ64N/+u7R3Nj6uzsQsb7PJXGNTf
     -----END CERTIFICATE-----
-  idp_sso_target_url: "https://shib.raven.cam.ac.uk/idp/profile/SAML2/Redirect/SSO"
-  issuer: "gitlab.${local.gitlab_domain}"
-  name_identifier_format: "urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
-label: "Raven"
 EOF
   }
 }

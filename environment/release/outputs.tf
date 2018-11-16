@@ -2,7 +2,7 @@
 
 # A URL pointing to the gitlab deployment.
 output "gitlab_url" {
-  value = "https://gitlab.${local.gitlab_domain}/"
+  value = "https://${local.gitlab_external_host}"
 
   depends_on = [
     "helm_release.gitlab",

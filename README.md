@@ -16,7 +16,6 @@ This deployment is not yet complete. Known issues include:
 * There is no configuration of email sending or receiving.
 * There are no backup object storage buckets created.
 * The mechanism for having the Gitlab instance on a custom URL is untested.
-* SAML authentication is broken.
 
 ## Bootstrap
 
@@ -59,13 +58,20 @@ $ terraform apply -target=module.test
 $ terraform apply
 ```
 
+### Configure SAML authentication
+
+The deployment automatically generates a key and self-signed certificate to
+integrate with Raven's Shibboleth personality. Before you can authenticate using
+Raven, you will need to add some metadata to the Raven metadata site. See the
+"recipes" section below for more information.
+
 ### First ever deployment
 
 > This section only applies if you are deploying completely from scratch. You
 > may be doing this if you are making use of terraform's
 > [workspace](https://www.terraform.io/docs/state/workspaces.html) feature.
 
-This section is of use if you are getting errors of the following form:
+If you are getting errors of the following form:
 
 ```
 module.{...}.provider.google: google: could not find default credentials.
@@ -160,6 +166,21 @@ This is a sign that the ``helm init`` command succeeded but the tiller pod is
 not yet fully up. By the time you've read the message and found this entry in
 the README, the pod is probably up so just go back to your terminal and press
 "up" and "enter".
+
+### Changing Gitlab configuration
+
+Note that changing the gitlab configuration will *not* automatically restart the
+pods. If configuration changes don't seem to be taking effect, restart the pods
+manually via ``kubectl``.
+
+### SAML metadata
+
+SAML metadata suitable for adding to the Raven [metadata
+application](https://metadata.raven.cam.ac.uk/) is auto-generated and available
+at ``/users/auth/saml/metadata`` on the deployed site. Somewhat tediously, the
+generated ``<md:KeyDescriptor use="signing">`` tag and its contents must be
+copied and used to provide a ``<md:KeyDescriptor use="encryption">`` tag. For
+some reason, the SAML metadata generator does not do this for you.
 
 ## Getting familiar with this deployment
 

@@ -23,4 +23,7 @@ locals {
 
   # K8s namespace created for this release.
   k8s_namespace = "${kubernetes_namespace.gitlab.metadata.0.name}"
+
+  # External hostname of gitlab frontend
+  gitlab_external_host = "gitlab.${local.gitlab_domain}"
 }
