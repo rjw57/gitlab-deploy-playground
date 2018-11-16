@@ -14,8 +14,8 @@ deployment".
 This deployment is not yet complete. Known issues include:
 
 * There is no configuration of email sending or receiving.
-* There are no backup object storage buckets created.
 * The mechanism for having the Gitlab instance on a custom URL is untested.
+* Making and restoring from backups require some manual steps.
 
 ## Bootstrap
 
@@ -181,6 +181,32 @@ at ``/users/auth/saml/metadata`` on the deployed site. Somewhat tediously, the
 generated ``<md:KeyDescriptor use="signing">`` tag and its contents must be
 copied and used to provide a ``<md:KeyDescriptor use="encryption">`` tag. For
 some reason, the SAML metadata generator does not do this for you.
+
+### Backups
+
+Gitlab backups currently require that the storage buckets be available via a S3
+compatible API. Unfortunately the GCS buckets needs some hoops jumped through to
+be access via that API.
+
+To perform a backup, you can follow the [Gitlab
+instructions](https://gitlab.com/charts/gitlab/blob/master/doc/backup-restore/backup.md)
+except that you will need to manually set the credentials to a set of developer
+credentials which can be obtained from the [Google
+console](https://console.cloud.google.com/storage/settings).
+
+> See
+> [Google's documentation](https://cloud.google.com/storage/docs/interoperability)
+> for more details on this.
+
+After logging in to the task-runner pod via ``kubectl exec``, you will need to
+manually set the ``AWS_ACCESS_KEY_ID`` and ``AWS_SECRET_KEY`` environment
+variables using the GCS developer keys. Since these credentials are tied to an
+individual and not to a service account we cannot include them in the
+deployment.
+
+> If you are setting the variables using ``export AWS_ACCESS_KEY_ID=...``,
+> recall that starting the command with a space will ensure it is not written to
+> the command line history.
 
 ## Getting familiar with this deployment
 

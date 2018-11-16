@@ -117,12 +117,12 @@ resource "helm_release" "gitlab" {
   # Backup object storage
   set {
     name  = "global.appConfig.backups.bucket"
-    value = "bogus-backup-bucket"
+    value = "${google_storage_bucket.backup.name}"
   }
 
   set {
     name  = "global.appConfig.backups.tmpBucket"
-    value = "bogus-backup-tmp-bucket"
+    value = "${google_storage_bucket.backup_temp.name}"
   }
 
   set {

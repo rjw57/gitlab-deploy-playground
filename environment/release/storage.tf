@@ -13,6 +13,19 @@ locals {
   bucket_prefix = "${random_id.bucket_prefix.hex}"
 }
 
+# Backup buckets
+resource "google_storage_bucket" "backup" {
+  name          = "${local.bucket_prefix}-backup"
+  location      = "europe-west2"
+  storage_class = "REGIONAL"
+}
+
+resource "google_storage_bucket" "backup_temp" {
+  name          = "${local.bucket_prefix}-backup-temp"
+  location      = "europe-west2"
+  storage_class = "REGIONAL"
+}
+
 # Docker image registry
 module "registry_service_account" {
   source       = "./service_account"
