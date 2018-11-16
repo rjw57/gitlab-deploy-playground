@@ -25,7 +25,7 @@ This deployment is not yet complete. Known issues include:
 
 1. Download [terraform](https://www.terraform.io/) and [helm](https://helm.sh/).
    Helm must be installed so that the ``helm`` command is available on the path.
-2. Make sure that the ``kubectl`` command is installed an on the path.
+2. Make sure that the ``kubectl`` command is installed and is on the path.
 3. Generate a key for the Terraform Service account in the uis-automation-dm
    project:
 
@@ -170,7 +170,7 @@ If you want to go down the latter route, you can set up a new "workspace". A
 "default" workspace. In this parallel workspace you can try deploying your own
 version of Gitlab.
 
-You really should read an digest the entire section of the terraform manual on
+You really should read and digest the entire section of the terraform manual on
 workspaces first but the quick, quick version is:
 
 ```bash
