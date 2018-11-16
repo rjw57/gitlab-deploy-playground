@@ -25,8 +25,8 @@ provider "google-beta" {
 
 # A GCP provider which is configured to use a project-specific service account
 # within the GCP projects. The service account has project owner permissions but
-# no privileges outside of the project. For most resources, thi is the provider
-# which is used which helms ensure that we don't accidentally configure anything
+# no privileges outside of the project. For most resources, this is the provider
+# which is used which helps ensure that we don't accidentally configure anything
 # outside of our deployment project.
 #
 # Both the google and google-beta provider are configured identically.
