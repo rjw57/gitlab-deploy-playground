@@ -16,6 +16,8 @@ This deployment is not yet complete. Known issues include:
 * There is no configuration of email sending or receiving.
 * The mechanism for having the Gitlab instance on a custom URL is untested.
 * Making and restoring from backups require some manual steps.
+* The Kubernetes namespace used is hard-coded to "gitlab" which makes it a
+    little too easy to do something on production when you thought it was test.
 
 ## Bootstrap
 
