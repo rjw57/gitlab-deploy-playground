@@ -20,7 +20,7 @@ terraform {
 # service account credentials. This is placed here as opposed to a separate
 # locals.tf to try to keep it in sync with the configuration above. Ideally,
 # we'd have some way of interpolating backend configuration but it's not obvious
-# in the terraform docs if this s possible.
+# in the terraform docs if this is possible.
 locals {
   admin_service_account_credentials = "${file("${path.module}/secrets/terraform-admin-service-account-credentials.json")}"
 }
