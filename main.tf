@@ -1,11 +1,12 @@
 # main.tf contains configuration for the top-level resources
 
-# For various annoying reasons, bits of this configuration have to "escape" from
-# terraform every so often and write some state to the local disk. This
-# directory is a "safe" place to write stuff to which is ignored by git.
 locals {
-  secrets_dir           = "${path.module}/secrets/"
-  experiments_folder_id = "497670463628"            # == "UIS Automation/Experiments"
+  # For various annoying reasons, bits of this configuration have to "escape"
+  # from terraform every so often and write some state to the local disk. This
+  # directory is a "safe" place to write stuff to which is ignored by git.
+  secrets_dir = "${path.module}/secrets/"
+
+  experiments_folder_id = "497670463628" # == "UIS Automation/Experiments"
 }
 
 # production environment
