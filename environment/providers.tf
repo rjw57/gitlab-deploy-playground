@@ -59,9 +59,7 @@ provider "kubernetes" {
   client_key         = "${module.cluster.master_auth_client_key}"
 }
 
-# Helm configured to use the same admin user as the k8s provider. Uses a
-# directory within the repository for the helm "home" directory to avoid
-# polluting the local user's ~/.helm directory.
+# Helm configured to use the same admin user as the k8s provider.
 provider "helm" {
   version = "~> 0.6"
 
