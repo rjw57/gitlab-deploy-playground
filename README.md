@@ -94,6 +94,10 @@ terraform examples this appears to be Very Much The Way To Do It.
 The top-level [main.tf](main.tf) in this repository contains configuration for
 two environments: ``test`` and ``production``.
 
+## Hacking on this deployment
+
+*PLEASE, PLEASE, PLEASE* make sure you use ``terraform fmt`` before committing.
+
 ## Recipes
 
 This section contains some recipes which are useful when dealing with the
