@@ -6,6 +6,11 @@ global:
     enabled: false
 
 gitlab:
+  appConfig:
+    # By default, new users cannot create groups. This does not affect the
+    # ability of existing group owners to create subgroups and it does not
+    # change the "can create groups" bit for existing users.
+    defaultCanCreateGroup: false
   unicorn:
     omniauth:
       enabled: true
