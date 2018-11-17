@@ -210,6 +210,35 @@ deployment.
 > recall that starting the command with a space will ensure it is not written to
 > the command line history.
 
+### Restoring one environment from another
+
+Rather than backup up buckets to the tar file using the backup utility, one can
+save some space by directly copying buckets if the backup is from environment
+to environment rather than intended for disaster recovery.
+
+Firstly, add ``--skip`` options to the ``backup-utility`` call above to skip
+backing up buckets:
+
+```bash
+$ backup-utility --skip artifacts --skip lfs --skip packages --skip registry --skip uploads
+```
+
+After restoring the new instance, one may copy buckets using the ``gsutil``
+command:
+
+```bash
+# Set the following based on the bucket names in the environments being copied.
+$ export SOURCE_PREFIX=some-prefix-
+$ export DESTINATION_PREFIX=some-prefix-
+$ for i in artifacts lfs packages registry uploads; do \
+    gsutil rsync -r gs://${SOURCE_PREFIX}${i}/ gs://${DESTINATION_PREFIX}/${i}/; \
+done
+```
+
+The chief advantages of doing it this way are that a) cloud-to-cloud copying
+within Google is very fast and b) it does not require that the files be
+downloaded and then re-uploaded.
+
 ## Getting familiar with this deployment
 
 This deployment is large and complex and is possibly best understood by
