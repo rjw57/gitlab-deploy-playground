@@ -51,9 +51,36 @@ resource "helm_release" "gitlab" {
 
   version = "${local.gitlab_chart_version}"
 
-  values = [
-    "${file("${path.module}/chart-values.yaml")}",
-  ]
+  # By default, new users cannot create groups. This does not affect the ability
+  # of existing group owners to create subgroups and it does not change the "can
+  # create groups" bit for existing users.
+  set {
+    name = "global.appConfig.defaultCanCreateGroup"
+    value = "false"
+  }
+
+  # Users (unless invited by others) will have their usernames match their
+  # crsids. In general, we want to discourage changing usernames.
+  set {
+    name = "global.appConfig.usernameChangingEnabled"
+    value = "false"
+  }
+
+  # Components which should not be installed
+  set {
+    name = "gitlab-runner.install"
+    value = "false"
+  }
+
+  set {
+    name = "postgresql.install"
+    value = "false"
+  }
+
+  set {
+    name = "global.minio.enabled"
+    value = "false"
+  }
 
   # Certmanager issuer
   set {
@@ -221,6 +248,26 @@ resource "helm_release" "gitlab" {
   }
 
   # SAML configuration
+  set {
+    name  = "gitlab.unicorn.omniauth.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "gitlab.unicorn.omniauth.allowSingleSignOn[0]"
+    value = "saml"
+  }
+
+  set {
+    name  = "gitlab.unicorn.omniauth.blockAutoCreatedUsers"
+    value = "false"
+  }
+
+  set {
+    name  = "gitlab.unicorn.omniauth.autoLinkSamlUser"
+    value = "true"
+  }
+
   set {
     name  = "gitlab.unicorn.omniauth.providers[0].secret"
     value = "${local.saml_config_secret}"

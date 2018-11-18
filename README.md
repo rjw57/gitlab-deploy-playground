@@ -239,6 +239,22 @@ The chief advantages of doing it this way are that a) cloud-to-cloud copying
 within Google is very fast and b) it does not require that the files be
 downloaded and then re-uploaded.
 
+### Restarting pods on configuration change
+
+Pods do not always restart after a configuration change. There is an
+[issue](https://gitlab.com/charts/gitlab/issues/57) open to address this but, in
+the meantime, the following command can be used to perform a staged restart of
+the pods:
+
+```bash
+$ kubectl -n gitlab get pod | egrep 'unicorn|task-runner' | cut -d " " -f1 - \
+    | xargs -n1 -p kubectl -n gitlab delete pod
+```
+
+The use of the `-p` flag to `xargs` will prompt before running each command.  To
+avoid service outage, you should confirm that a pod to replace the one deleted
+has fully started before proceeding to delete the next pod.
+
 ## Getting familiar with this deployment
 
 This deployment is large and complex and is possibly best understood by
