@@ -216,6 +216,10 @@ deployment.
 > recall that starting the command with a space will ensure it is not written to
 > the command line history.
 
+In addition to the documented steps from GitLab, you will probably want to
+backup the shell host key secret as well otherwise people will see the host keys
+change.
+
 ### Restoring one environment from another
 
 Rather than backup up buckets to the tar file using the backup utility, one can
