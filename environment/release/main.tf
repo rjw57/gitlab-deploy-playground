@@ -279,7 +279,6 @@ resource "helm_release" "gitlab" {
   }
 
   depends_on = [
-    "kubernetes_secret.initial_root_password",
     "kubernetes_service.cloud_sql_proxy",
     "google_dns_record_set.wildcard",
     "helm_repository.gitlab",

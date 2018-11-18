@@ -18,9 +18,6 @@ This deployment is not yet complete. Known issues include:
 * Making and restoring from backups require some manual steps and is fiddly.
 * SSH host keys are not preserved if the helm release is destroyed and
     re-created.
-* The initial-root-password secret keeps being recreated since we're going under
-    the feet of tiller a little bit. (We probably don't need to create it
-    ourselves but update the docs to explain how you retrieve it.)
 
 ## Bootstrap
 
@@ -115,17 +112,6 @@ two environments: ``test`` and ``production``.
 This section contains some recipes which are useful when dealing with the
 deployment.
 
-### Get Gitlab URL and initial root password
-
-The following will (on Linux) open your web browser at the production deployment
-and copy the root password to the clipboard. Replace ``production`` with
-``test`` for the test deployment.
-
-```bash
-$ xdg-open $(terraform output production_gitlab_url)
-$ terraform output production_initial_root_password | xclip -i -sel clip
-```
-
 ### Using kubectl/helm directly
 
 A kubeconfig file suitable for connecting to the clusters created by this
@@ -133,10 +119,27 @@ deployment is available as an output. For example, to connect to the production
 cluster:
 
 ```bash
+$ ENVIRONMENT=production  # or "test"
 $ export KUBECONFIG=$(mktemp ./secrets/kubeconfig.XXXXXX)
-$ terraform output production_kubeconfig_content > "$KUBECONFIG"
-$ kubectl -n production get pod
+$ terraform output ${ENVIRONMENT}_kubeconfig_content > "$KUBECONFIG"
+$ kubectl -n "${ENVIRONMENT}" get pod
 $ helm ls
+```
+
+Many of the recipes below assume that you have configured ``kubectl`` and/or
+``helm`` appropriately.
+
+### Get Gitlab URL and initial root password
+
+The following will (on Linux) open your web browser at the production deployment
+and copy the root password to the clipboard. Replace ``production`` with
+``test`` for the test deployment.
+
+```bash
+$ ENVIRONMENT=production  # or "test"
+$ xdg-open $(terraform output ${ENVIRONMENT}_gitlab_url)
+$ kubectl -n ${ENVIRONMENT} get secret ${ENVIRONMENT}-gitlab-initial-root-password \
+    -o "jsonpath={.data['password']}" | base64 --decode | xclip -i -sel clip
 ```
 
 ### Overriding the domain name for a particular environment
@@ -231,8 +234,8 @@ command:
 
 ```bash
 # Set the following based on the bucket names in the environments being copied.
-$ export SOURCE_PREFIX=some-prefix-
-$ export DESTINATION_PREFIX=some-prefix-
+$ SOURCE_PREFIX=some-prefix-
+$ DESTINATION_PREFIX=some-prefix-
 $ for i in artifacts lfs packages registry uploads; do \
     gsutil rsync -r gs://${SOURCE_PREFIX}${i}/ gs://${DESTINATION_PREFIX}${i}/; \
 done
@@ -250,9 +253,9 @@ the meantime, the following command can be used to perform a staged restart of
 the pods:
 
 ```bash
-$ export NAMESPACE=production  # or "test"
-$ kubectl -n "$NAMESPACE" get pod | egrep 'unicorn|task-runner' | cut -d " " -f1 - \
-    | xargs -n1 -p kubectl -n "$NAMESPACE" delete pod
+$ ENVIRONMENT=production  # or "test"
+$ kubectl -n "$ENVIRONMENT" get pod | egrep 'unicorn|task-runner' | cut -d " " -f1 - \
+    | xargs -n1 -p kubectl -n "$ENVIRONMENT" delete pod
 ```
 
 The use of the `-p` flag to `xargs` will prompt before running each command.  To

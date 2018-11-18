@@ -7,12 +7,9 @@ locals {
   db_username = "${google_sql_user.gitlab.name}"
   db_password = "${google_sql_user.gitlab.password}"
 
-  initial_root_password = "${random_string.initial_root_password.result}"
-
   db_password_secret           = "${kubernetes_secret.db_password.metadata.0.name}"
   db_proxy_credentials_secret  = "${kubernetes_secret.db_proxy_credentials.metadata.0.name}"
   backups_s3cfg_secret         = "${kubernetes_secret.backups_s3cfg.metadata.0.name}"
-  initial_root_password_secret = "${kubernetes_secret.initial_root_password.metadata.0.name}"
   saml_config_secret           = "${kubernetes_secret.saml_config.metadata.0.name}"
 
   # Actual domain we pass to the gitlab chart. Can be overridden.

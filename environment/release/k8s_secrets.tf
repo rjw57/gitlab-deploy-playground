@@ -1,25 +1,5 @@
 # Create secrets for deployment
 
-# Initial root password for gitlab
-resource "random_string" "initial_root_password" {
-  length = 48
-
-  # To facilitate cut/paste and because the gitlab helm charts can sometimes be
-  # sensitive to special characters.
-  special = false
-}
-
-resource "kubernetes_secret" "initial_root_password" {
-  metadata {
-    name      = "${var.name}-gitlab-initial-root-password"
-    namespace = "${local.k8s_namespace}"
-  }
-
-  data {
-    password = "${local.initial_root_password}"
-  }
-}
-
 resource "kubernetes_secret" "db_password" {
   metadata {
     name      = "postgresql-password"
