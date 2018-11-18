@@ -1,6 +1,12 @@
 # variables.tf contains definitions of external variables used to configure the
 # environment
 
+# Unique name for this release. Used to form GCP resource names such as database
+# names and database users.
+variable "name" {
+  default = "gitlab"
+}
+
 # Service account credentials for the terraform admin service account. Required
 # to create the project in the first place and to configure the delegated DNS
 # zone.

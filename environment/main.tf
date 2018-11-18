@@ -106,6 +106,8 @@ resource "kubernetes_cluster_role_binding" "tiller" {
 module "release" {
   source = "./release"
 
+  name = "${var.name}"
+
   zone     = "${local.zone_name}"
   dns_name = "${local.dns_name}"
 

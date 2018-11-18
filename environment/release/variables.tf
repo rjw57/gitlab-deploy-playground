@@ -18,9 +18,7 @@ variable "chart" {
 
 # Unique name for this release. Used to form GCP resource names such as database
 # names and database users.
-variable "name" {
-  default = "gitlab"
-}
+variable "name" {}
 
 # DNS domain for gitlab release. NOTE: this needs the trailing ".".
 variable "dns_name" {}

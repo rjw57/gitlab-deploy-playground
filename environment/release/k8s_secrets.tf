@@ -11,7 +11,7 @@ resource "random_string" "initial_root_password" {
 
 resource "kubernetes_secret" "initial_root_password" {
   metadata {
-    name      = "gitlab-gitlab-initial-root-password"
+    name      = "${var.name}-gitlab-initial-root-password"
     namespace = "${local.k8s_namespace}"
   }
 

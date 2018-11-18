@@ -13,6 +13,7 @@ locals {
 module "production" {
   source = "./environment"
 
+  name                        = "production"
   project_name                = "Gitlab Production"
   project_folder_id           = "${local.experiments_folder_id}"
   generated_project_id_prefix = "gitlab-prod"
@@ -43,6 +44,7 @@ module "production" {
 module "test" {
   source = "./environment"
 
+  name                        = "test"
   project_name                = "Gitlab Test"
   project_folder_id           = "${local.experiments_folder_id}"
   generated_project_id_prefix = "gitlab-test"

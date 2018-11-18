@@ -132,7 +132,7 @@ cluster:
 ```bash
 $ export KUBECONFIG=$(mktemp ./secrets/kubeconfig.XXXXXX)
 $ terraform output production_kubeconfig_content > "$KUBECONFIG"
-$ kubectl -n gitlab get pod
+$ kubectl -n production get pod
 $ helm ls
 ```
 
@@ -231,7 +231,7 @@ command:
 $ export SOURCE_PREFIX=some-prefix-
 $ export DESTINATION_PREFIX=some-prefix-
 $ for i in artifacts lfs packages registry uploads; do \
-    gsutil rsync -r gs://${SOURCE_PREFIX}${i}/ gs://${DESTINATION_PREFIX}/${i}/; \
+    gsutil rsync -r gs://${SOURCE_PREFIX}${i}/ gs://${DESTINATION_PREFIX}${i}/; \
 done
 ```
 
@@ -247,8 +247,9 @@ the meantime, the following command can be used to perform a staged restart of
 the pods:
 
 ```bash
-$ kubectl -n gitlab get pod | egrep 'unicorn|task-runner' | cut -d " " -f1 - \
-    | xargs -n1 -p kubectl -n gitlab delete pod
+$ export NAMESPACE=production  # or "test"
+$ kubectl -n "$NAMESPACE" get pod | egrep 'unicorn|task-runner' | cut -d " " -f1 - \
+    | xargs -n1 -p kubectl -n "$NAMESPACE" delete pod
 ```
 
 The use of the `-p` flag to `xargs` will prompt before running each command.  To
