@@ -15,9 +15,12 @@ This deployment is not yet complete. Known issues include:
 
 * There is no configuration of email sending or receiving.
 * The mechanism for having the Gitlab instance on a custom URL is untested.
-* Making and restoring from backups require some manual steps.
-* The Kubernetes namespace used is hard-coded to "gitlab" which makes it a
-    little too easy to do something on production when you thought it was test.
+* Making and restoring from backups require some manual steps and is fiddly.
+* SSH host keys are not preserved if the helm release is destroyed and
+    re-created.
+* The initial-root-password secret keeps being recreated since we're going under
+    the feet of tiller a little bit. (We probably don't need to create it
+    ourselves but update the docs to explain how you retrieve it.)
 
 ## Bootstrap
 
